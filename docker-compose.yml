@@ -1,0 +1,84 @@
+---
+services:
+  server:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.8.0}
+    container_name: authentik_server
+    network_mode: host
+    restart: unless-stopped
+    command: server
+    environment:
+      AUTHENTIK_LISTEN__HTTP: "[::]:${AUTHENTIK_SERVER_HTTP_PORT:-9000}"
+      AUTHENTIK_LISTEN__HTTPS: "[::]:${AUTHENTIK_SERVER_HTTPS_PORT:-9443}"
+      AUTHENTIK_REDIS__HOST: "::1"
+      AUTHENTIK_POSTGRESQL__HOST: "::1"
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?postgres password required}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_ERROR_REPORTING__ENABLED:-false}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key is required}
+    ports:
+      - "${AUTHENTIK_SERVER_HTTP_PORT:-9000}:${AUTHENTIK_SERVER_HTTP_PORT:-9000}"
+      - "${AUTHENTIK_SERVER_HTTPS_PORT:-9443}:${AUTHENTIK_SERVER_HTTPS_PORT:-9443}"
+    depends_on:
+      - db
+      - cache
+    labels:
+      traefik.enable: true
+      traefik.http.services.authentik.loadbalancer.server.port: ${AUTHENTIK_SERVER_HTTP_PORT:-9000}
+      traefik.http.routers.authentik.rule: Host(`auth.home.joe.nyland.io`)
+    volumes:
+      - /containers/authentik/media:/media
+      - /containers/authentik/templates:/templates
+  db:
+    image: docker.io/library/postgres:16-alpine
+    container_name: authentik_db
+    network_mode: host
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASS:?postgres password required}
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
+    volumes:
+      - /containers/authentik/db:/var/lib/postgresql/data
+  cache:
+    image: docker.io/library/redis:alpine
+    container_name: authentik_cache
+    network_mode: host
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - /containers/authentik/cache:/data
+  worker:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.8.0}
+    container_name: authentik_worker
+    network_mode: host
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_REDIS__HOST: "::1"
+      AUTHENTIK_POSTGRESQL__HOST: "::1"
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?postgres password required}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_ERROR_REPORTING__ENABLED:-false}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key is required}
+    depends_on:
+      - db
+      - cache
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Allows management of outpost containers
+      - /containers/authentik/media:/media
+      - /containers/authentik/certs:/certs
+      - /containers/authentik/templates:/templates
