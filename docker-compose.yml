@@ -16,8 +16,6 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?postgres password required}
       AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_ERROR_REPORTING__ENABLED:-false}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key is required}
-      AUTHENTIK_EMAIL__HOST: ${AUTHENTIK_EMAIL__HOST:-localhost}
-      AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL__FROM:-authentik@localhost}
     ports:
       - "${AUTHENTIK_SERVER_HTTP_PORT:-9000}:${AUTHENTIK_SERVER_HTTP_PORT:-9000}"
       - "${AUTHENTIK_SERVER_HTTPS_PORT:-9443}:${AUTHENTIK_SERVER_HTTPS_PORT:-9443}"
@@ -76,6 +74,8 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?postgres password required}
       AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_ERROR_REPORTING__ENABLED:-false}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key is required}
+      AUTHENTIK_EMAIL__HOST: ${AUTHENTIK_EMAIL__HOST:-localhost}
+      AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL__FROM:-authentik@localhost}
     depends_on:
       - db
       - cache
