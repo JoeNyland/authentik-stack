@@ -1,7 +1,7 @@
 ---
 services:
   server:
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.8.0}
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-latest}
     container_name: authentik-server
     network_mode: host
     restart: unless-stopped
@@ -61,7 +61,7 @@ services:
     volumes:
       - /containers/authentik/cache:/data
   worker:
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.8.0}
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-latest}
     container_name: authentik-worker
     network_mode: host
     restart: unless-stopped
