@@ -79,7 +79,3 @@ services:
       - /containers/authentik/media:/media
       - /containers/authentik/certs:/certs
       - /containers/authentik/templates:/templates
-
-networks:
-  default:
-    enable_ipv6: true
