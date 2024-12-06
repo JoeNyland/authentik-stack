@@ -8,8 +8,8 @@ services:
     environment:
       AUTHENTIK_LISTEN__HTTP: "[::]:${AUTHENTIK_SERVER_HTTP_PORT:-9000}"
       AUTHENTIK_LISTEN__HTTPS: "[::]:${AUTHENTIK_SERVER_HTTPS_PORT:-9443}"
-      AUTHENTIK_REDIS__HOST: localhost
-      AUTHENTIK_POSTGRESQL__HOST: localhost
+      AUTHENTIK_REDIS__HOST: cache
+      AUTHENTIK_POSTGRESQL__HOST: db
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?postgres password required}
@@ -62,8 +62,8 @@ services:
     restart: unless-stopped
     command: worker
     environment:
-      AUTHENTIK_REDIS__HOST: localhost
-      AUTHENTIK_POSTGRESQL__HOST: localhost
+      AUTHENTIK_REDIS__HOST: cache
+      AUTHENTIK_POSTGRESQL__HOST: db
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?postgres password required}
