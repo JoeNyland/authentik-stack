@@ -3,7 +3,6 @@ services:
   server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-latest}
     container_name: authentik-server
-    network_mode: host
     restart: unless-stopped
     command: server
     environment:
@@ -24,7 +23,6 @@ services:
       - cache
     labels:
       traefik.enable: true
-      traefik.http.services.authentik.loadbalancer.server.port: ${AUTHENTIK_SERVER_HTTP_PORT:-9000}
       traefik.http.routers.authentik.rule: Host(`auth.home.joe.nyland.io`)
     volumes:
       - /containers/authentik/media:/media
@@ -32,7 +30,6 @@ services:
   db:
     image: docker.io/library/postgres:16-alpine
     container_name: authentik-db
-    network_mode: host
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
@@ -49,7 +46,6 @@ services:
   cache:
     image: docker.io/library/redis:alpine
     container_name: authentik-cache
-    network_mode: host
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
     healthcheck:
@@ -63,7 +59,6 @@ services:
   worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-latest}
     container_name: authentik-worker
-    network_mode: host
     restart: unless-stopped
     command: worker
     environment:
