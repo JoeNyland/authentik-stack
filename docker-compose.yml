@@ -86,7 +86,6 @@ services:
       - /containers/authentik/templates:/templates
 
 networks:
-  default:
   proxy:
     external: true
   metrics:
