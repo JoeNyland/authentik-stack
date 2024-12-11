@@ -1,6 +1,6 @@
 ---
 services:
-  server:
+  authentik-server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-latest}
     container_name: authentik-server
     restart: unless-stopped
@@ -32,7 +32,7 @@ services:
     volumes:
       - /containers/authentik/media:/media
       - /containers/authentik/templates:/templates
-  db:
+  authentik-db:
     image: docker.io/library/postgres:16-alpine
     container_name: authentik-db
     restart: unless-stopped
@@ -48,7 +48,7 @@ services:
       POSTGRES_DB: ${PG_DB:-authentik}
     volumes:
       - /containers/authentik/db:/var/lib/postgresql/data
-  cache:
+  authentik-cache:
     image: docker.io/library/redis:alpine
     container_name: authentik-cache
     command: --save 60 1 --loglevel warning
@@ -61,7 +61,7 @@ services:
       timeout: 3s
     volumes:
       - /containers/authentik/cache:/data
-  worker:
+  authentik-worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-latest}
     container_name: authentik-worker
     restart: unless-stopped
