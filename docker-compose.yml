@@ -86,6 +86,8 @@ services:
       - /containers/authentik/templates:/templates
 
 networks:
+  default:
+    enable_ipv6: true
   proxy:
     external: true
   metrics:
