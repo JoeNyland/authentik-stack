@@ -22,7 +22,6 @@ services:
     networks:
       - default
       - proxy
-      - metrics
     depends_on:
       - db
       - cache
@@ -89,6 +88,4 @@ networks:
   default:
     enable_ipv6: true
   proxy:
-    external: true
-  metrics:
     external: true
