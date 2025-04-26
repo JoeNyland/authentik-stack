@@ -66,7 +66,7 @@ services:
     volumes:
       - /containers/authentik/db:/var/lib/postgresql/data
   cache:
-    image: redis:alpine
+    image: redis:7-alpine
     container_name: authentik-cache
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
