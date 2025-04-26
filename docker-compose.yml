@@ -50,7 +50,7 @@ services:
       - /containers/authentik/media:/media
       - /containers/authentik/templates:/templates
   db:
-    image: docker.io/library/postgres:16-alpine
+    image: postgres:16-alpine
     container_name: authentik-db
     restart: unless-stopped
     healthcheck:
@@ -66,7 +66,7 @@ services:
     volumes:
       - /containers/authentik/db:/var/lib/postgresql/data
   cache:
-    image: docker.io/library/redis:alpine
+    image: redis:alpine
     container_name: authentik-cache
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
